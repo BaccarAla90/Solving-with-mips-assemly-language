@@ -1,0 +1,69 @@
+.data
+	Tab1: .word 14,5,85,9,35,7,62,47,56,12 
+	Tabpaire: .word 0:4 
+	Tabimpaire: .word 0:6 
+	text1: .asciiz "The even numbers are:"
+	text2: .asciiz ","
+	text3: .asciiz "\n"
+	text4: .asciiz "The odd numbers are:"
+.text 
+ 	main:
+ 		addi $s0 $0 2 
+ 		addi $t0 $zero 0 #Counter
+		addi $t1 $zero 0 #Index of Tabpaire
+		addi $t2 $zero 0 #Index of Tabimpaire
+ 		while:
+			beq $t0 40 exit0
+			lw $t3 Tab1($t0)
+			div $t3 $s0 #Condition
+			mfhi $t4 #Getting the divion remainder
+			beq $t4 $0 Bloc
+			sw $t3 Tabimpaire($t2)
+			addi $t0 $t0 4
+			addi $t2 $t2 4
+			j while	
+			Bloc:
+				sw $t3 Tabpaire($t1)
+				addi $t0 $t0 4
+				addi $t1 $t1 4
+				j while		
+ 		exit0:
+		addi $t0 $0 0
+		li $v0 4
+		la $a0 text1
+		syscall
+		
+		while_pa:
+			beq $t0 16 exit1
+			lw $t1 Tabpaire($t0)
+			li $v0 1
+			addi $a0 $t1 0
+			syscall
+			li $v0 4
+			la $a0 text2
+			syscall	
+			addi $t0 $t0 4
+			j while_pa
+ 		exit1:
+ 		addi $t0 $0 0
+ 		li $v0 4
+		la $a0 text3
+		syscall
+		li $v0 4
+		la $a0 text4
+		syscall
+		
+		while_im:
+			beq $t0 24 exit2
+			lw $t1 Tabimpaire($t0)
+			li $v0 1
+			addi $a0 $t1 0
+			syscall
+			li $v0 4
+			la $a0 text2
+			syscall	
+			addi $t0 $t0 4
+			j while_im
+		exit2:
+ 	li $v0 10
+	syscall

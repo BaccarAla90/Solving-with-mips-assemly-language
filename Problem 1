@@ -1,0 +1,73 @@
+.data
+	Tab: .word 45, -36, 28, -70, -37, 90, -98, 32, -20 
+	Tab_po: .word 0:4 #Positive table
+	Tab_ne: .word 0:5 #Negative table
+	text: .asciiz ","
+	text1: .asciiz "The positive values:"
+	text2: .asciiz "The negative values:"
+	NL: .asciiz "\n" #NewLine
+.text
+#main program
+	main:
+		addi $s1 $0 36 #Table length 36=4*9
+		addi $t0 $zero 0 #Counter
+		addi $t1 $zero 0 #Index of table 1
+		addi $t2 $zero 0 #Index of table 2
+		while:
+			beq $t0 $s1 EXIT
+			lw $t3 Tab($t0)
+			bgt $t3 $0 POS #Condition
+			sw $t3 Tab_ne($t2)
+			addi $t2 $t2 4 
+			addi $t0 $t0 4
+			j while
+			POS:
+				sw $t3 Tab_po($t1)
+				addi $t1 $t1 4 
+				addi $t0 $t0 4
+				j while
+		#Printing Tables	
+		EXIT:
+			addi $t0 $0 0
+			li $v0 4
+			la $a0 text1
+			syscall
+			
+			while_po:
+				beq $t0 16 exit0
+				lw $t1 Tab_po($t0)
+				li $v0 1
+				addi $a0 $t1 0
+				syscall
+				
+				li $v0 4
+				la $a0 text
+				syscall	
+				addi $t0 $t0 4
+				j while_po
+			
+			exit0:		
+			addi $t0 $0 0
+			#NewLine
+			li $v0 4
+			la $a0 NL
+			syscall
+			li $v0 4
+			la $a0 text2
+			syscall
+			while_ne:
+				beq $t0 20 exit
+				lw $t1 Tab_ne($t0)
+				li $v0 1
+				addi $a0 $t1 0
+				syscall
+				
+				li $v0 4
+				la $a0 text
+				syscall	
+				addi $t0 $t0 4
+				j while_ne
+			exit:
+			#exit
+				li $v0 10
+				syscall
